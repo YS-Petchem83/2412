@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>학교 실습실 안전 교육 시스템</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- 로그인 모달 -->
+    <div id="loginModal" class="login-modal">
+        <div class="login-container">
+            <div class="login-box">
+                <h2>학교 실습실 안전 교육 시스템</h2>
+                <p class="login-subtitle">안전한 실습을 위한 첫 걸음</p>
+                
+                <form id="loginForm">
+                    <div class="login-form-group">
+                        <label for="userId">사용자명</label>
+                        <input type="text" id="userId" placeholder="사용자명을 입력하세요" required>
+                    </div>
+
+                    <div class="login-form-group">
+                        <label for="userPassword">비밀번호</label>
+                        <input type="password" id="userPassword" placeholder="비밀번호를 입력하세요" required>
+                    </div>
+
+                    <div class="login-form-group">
+                        <label for="userRole">역할 선택</label>
+                        <select id="userRole" required>
+                            <option value="">선택하세요</option>
+                            <option value="student">학생</option>
+                            <option value="admin">관리자</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="login-btn">로그인</button>
+                </form>
+
+                <div class="demo-accounts">
+                    <p>데모 계정</p>
+                    <button type="button" class="demo-btn" onclick="demoLogin('student')">👨‍🎓 학생 로그인</button>
+                    <button type="button" class="demo-btn" onclick="demoLogin('admin')">👨‍💼 관리자 로그인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" style="display: none;" id="mainContainer">
+        <!-- 마스코트 캐릭터 -->
+        <div class="mascot">
+            <div class="mascot-body">✨</div>
+            <div class="mascot-bubble">
+                <p id="mascotMessage">안전이 최고야!</p>
+            </div>
+        </div>
+
+        <!-- 헤더 -->
+        <header class="header">
+            <div class="header-content">
+                <h1>🔒 학교 실습실 안전 교육 시스템</h1>
+                <div class="header-right">
+                    <p class="user-info" id="userInfo"></p>
+                    <button class="logout-btn" onclick="logout()">로그아웃</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 네비게이션 -->
+        <nav class="navbar">
+            <button class="nav-btn active" data-tab="home">홈</button>
+            <button class="nav-btn" data-tab="education">안전교육</button>
+            <button class="nav-btn" data-tab="info">실습정보</button>
+            <button class="nav-btn" data-tab="accident">사고대처</button>
+            <button class="nav-btn" data-tab="hazard">위험제보</button>
+            <button class="nav-btn" data-tab="equipment">장비관리</button>
+            <button class="nav-btn" data-tab="schedule">일정</button>
+            <button class="nav-btn" data-tab="community">커뮤니티</button>
+            
+            <!-- 관리자 메뉴 -->
+            <button class="nav-btn admin-only" data-tab="admin" style="display: none;">👨‍💼 관리자</button>
+        </nav>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="main-content">
+            
+            <!-- 홈 탭 -->
+            <section id="home-tab" class="tab-content active">
+                <div class="home-container">
+                    <div class="welcome-section">
+                        <h2>환영합니다!</h2>
+                        <p>이 시스템은 실습 중 안전을 위해 만들어졌습니다.</p>
+                    </div>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-card" data-tab="education">
+                            <div class="feature-icon">📚</div>
+                            <h3>안전교육</h3>
+                            <p>실습별 안전수칙과 사고 대처 방법을 배우세요</p>
+                        </div>
+                        <div class="feature-card" data-tab="info">
+                            <div class="feature-icon">🛠️</div>
+                            <h3>실습정보</h3>
+                            <p>실습 방법과 준비물을 확인하세요</p>
+                        </div>
+                        <div class="feature-card" data-tab="accident">
+                            <div class="feature-icon">🚨</div>
+                            <h3>사고대처</h3>
+                            <p>사고 상황별 대처 방법을 안내합니다</p>
+                        </div>
+                        <div class="feature-card" data-tab="hazard">
+                            <div class="feature-icon">⚠️</div>
+                            <h3>위험제보</h3>
+                            <p>위험요소를 발견하면 제보해주세요</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 안전교육 탭 -->
+            <section id="education-tab" class="tab-content">
+                <div class="section-header">
+                    <h2>안전교육</h2>
+                </div>
+                
+                <div class="education-container">
+                    <div class="step-selector" id="practiceButtons">
+                        <h3>1단계: 실습 선택</h3>
+                        <div class="practice-list">
+                            <button class="practice-btn" data-practice="drilling" onclick="selectPractice('drilling')">🔩 드릴</button>
+                            <button class="practice-btn" data-practice="arc_welding" onclick="selectPractice('arc_welding')">⚡ 직류아크용접</button>
+                            <button class="practice-btn" data-practice="gas_welding" onclick="selectPractice('gas_welding')">🔥 가스용접</button>
+                            <button class="practice-btn" data-practice="file_work" onclick="selectPractice('file_work')">📄 파일 작업</button>
+                            <button class="practice-btn" data-practice="pipe_machine" onclick="selectPractice('pipe_machine')">🔧 파이프머신</button>
+                        </div>
+                    </div>
+
+                    <div class="quiz-container" id="quizContainer" style="display: none;">
+                        <div class="quiz-type-selector" id="quizTypeButtons" style="display: none;">
+                            <button class="quiz-type-btn active" data-quizType="safety" onclick="selectQuizType('safety')">📚 안전수칙 퀴즈</button>
+                            <button class="quiz-type-btn" data-quizType="accident" onclick="selectQuizType('accident')">🚨 사고 대처 퀴즈</button>
+                        </div>
+                        <div id="quizContent" style="display: none;"></div>
+                        <div id="quizResult" class="quiz-result" style="display: none;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 실습정보 탭 -->
+            <section id="info-tab" class="tab-content">
+                <div class="section-header">
+                    <h2>실습정보</h2>
+                </div>
+                
+                <div class="info-container">
+                    <div class="info-selector">
+                        <h3>실습을 선택하세요</h3>
+                        <div class="info-practice-list">
+                            <button class="info-practice-btn" data-info-practice="drilling">🔩 드릴</button>
+                            <button class="info-practice-btn" data-info-practice="arc_welding">⚡ 직류아크용접</button>
+                            <button class="info-practice-btn" data-info-practice="gas_welding">🔥 가스용접</button>
+                            <button class="info-practice-btn" data-info-practice="file_work">📄 파일 작업</button>
+                            <button class="info-practice-btn" data-info-practice="pipe_machine">🔧 파이프머신</button>
+                        </div>
+                    </div>
+
+                    <div class="info-detail" style="display: none;" id="infoDetail">
+                        <div class="info-tabs">
+                            <button class="info-tab-btn active" data-info-tab="method">📋 실습 방법</button>
+                            <button class="info-tab-btn" data-info-tab="materials">🛠️ 준비물</button>
+                            <button class="info-tab-btn" data-info-tab="equipment">⚙️ 장비 사용법</button>
+                            <button class="info-tab-btn" data-info-tab="warnings">⚠️ 주의사항</button>
+                        </div>
+                        <div id="infoContent"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 사고대처 탭 -->
+            <section id="accident-tab" class="tab-content">
+                <div class="section-header">
+                    <h2>사고대처 방법</h2>
+                </div>
+                
+                <div class="accident-container">
+                    <div class="accident-type-selector">
+                        <h3>사고 유형을 선택하세요</h3>
+                        <div class="accident-types">
+                            <button class="accident-type-btn" data-accident="burn">🔥 화상</button>
+                            <button class="accident-type-btn" data-accident="cut">🩸 베임/상처</button>
+                            <button class="accident-type-btn" data-accident="electric">⚡ 감전</button>
+                            <button class="accident-type-btn" data-accident="chemical">☠️ 화학물질 접촉</button>
+                            <button class="accident-type-btn" data-accident="fracture">🦴 골절</button>
+                            <button class="accident-type-btn" data-accident="crush">💔 압박/납작함</button>
+                        </div>
+                    </div>
+
+                    <div class="accident-detail" style="display: none;" id="accidentDetail">
+                        <div class="accident-steps"></div>
+                        <div class="emergency-info" style="display: none;">
+                            <div class="alert-box">
+                                <h4>🚨 긴급상황 안내</h4>
+                                <p>심각한 사고 발생 시:</p>
+                                <ul>
+                                    <li>즉시 교사에게 알리세요</li>
+                                    <li>필요시 119에 신고하세요</li>
+                                    <li>환자를 움직이지 마세요</li>
+                                    <li>의료진이 올 때까지 응급조치를 계속하세요</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 위험제보 탭 -->
+            <section id="hazard-tab" class="tab-content">
+                <div class="section-header">
+                    <h2>위험요소 제보</h2>
+                </div>
+                
+                <div class="hazard-container">
+                    <div class="hazard-form">
+                        <h3>위험요소를 제보해주세요</h3>
+                        <form id="hazardForm">
+                            <div class="form-group">
+                                <label for="hazardLocation">실습실 선택:</label>
+                                <select id="hazardLocation" required>
+                                    <option value="">선택하세요</option>
+                                    <option value="welding_room">용접실</option>
+                                    <option value="turning_room">선반실</option>
+                                    <option value="drilling_room">드릴실</option>
+                                    <option value="electrical_room">전기실습실</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="hazardType">위험 유형:</label>
+                                <select id="hazardType" required>
+                                    <option value="">선택하세요</option>
+                                    <option value="old_tool">노후 공구</option>
+                                    <option value="broken_equipment">고장 장비</option>
+                                    <option value="hazardous_structure">위험한 구조물</option>
+                                    <option value="safety_facility">안전장치 미흡</option>
+                                    <option value="other">기타</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="hazardLocation2">구체적 위치:</label>
+                                <input type="text" id="hazardLocation2" placeholder="예: 선반 옆 책장" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="hazardDescription">위험요소 설명:</label>
+                                <textarea id="hazardDescription" rows="4" placeholder="상세한 설명을 입력하세요" required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="hazardImage">사진 첨부 (선택):</label>
+                                <input type="file" id="hazardImage" accept="image/*">
+                            </div>
+
+                            <button type="submit" class="btn-primary">제보하기</button>
+                        </form>
+                    </div>
+
+                    <div class="hazard-list">
+                        <h3>제보 현황</h3>
+                        <div id="hazardReportList"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 장비관리 탭 -->
+            <section id="equipment-tab" class="tab-content">
+                <div class="section-header">
+                    <h2>🔧 장비 관리 시스템</h2>
+                    <p class="subtitle">실습실 장비의 상태를 한눈에 확인하고 관리하세요</p>
+                </div>
+                
+                <!-- 대시보드 통계 -->
+                <div class="equipment-stats-grid">
+                    <div class="stat-card total">
+                        <div class="stat-icon">📦</div>
+                        <div class="stat-content">
+                            <div class="stat-label">등록된 장비</div>
+                            <div class="stat-value" id="statTotal">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card normal">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-content">
+                            <div class="stat-label">정상 장비</div>
+                            <div class="stat-value" id="statNormal">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card caution">
+                        <div class="stat-icon">⚠️</div>
+                        <div class="stat-content">
+                            <div class="stat-label">점검 필요</div>
+                            <div class="stat-value" id="statCaution">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-icon">🚨</div>
+                        <div class="stat-content">
+                            <div class="stat-label">사용 중지</div>
+                            <div class="stat-value" id="statWarning">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 필터 섹션 -->
+                <div class="equipment-header">
+                    <div class="filter-section">
+                        <div class="filter-title">상태별 필터</div>
+                        <div class="equipment-filter">
+                            <button class="filter-btn active" data-status="all">전체</button>
+                            <button class="filter-btn" data-status="normal">✅ 정상</button>
+                            <button class="filter-btn" data-status="caution">⚠️ 점검 필요</button>
+                            <button class="filter-btn" data-status="warning">🚨 사용 중지</button>
+                        </div>
+                    </div>
+                    <div class="admin-only" style="display: none; gap: 1rem;">
+                        <button class="btn-add-equipment" onclick="toggleAddEquipmentForm()">+ 장비 추가</button>
+                        <button class="btn-delete-mode" id="deleteModeBtn" onclick="toggleDeleteMode()">🗑️ 장비 삭제</button>
+                    </div>
+                </div>
+
+                <!-- 장비 목록 (카드 그리드) -->
+                <div id="equipmentList" class="equipment-grid"></div>
+
+                <!-- 장비 추가 폼 (관리자용) -->
+                <div id="addEquipmentForm" class="add-equipment-modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>새 장비 추가</h3>
+                            <button class="close-btn" onclick="toggleAddEquipmentForm()">✕</button>
+                        </div>
+                        <form onsubmit="submitAddEquipment(event)" class="equipment-form">
+                            <div class="form-group">
+                                <label for="newEquipName">🏷️ 장비명</label>
+                                <input type="text" id="newEquipName" required placeholder="예: 직류아크용접기" minlength="2" maxlength="50">
+                            </div>
+                            <div class="form-group">
+                                <label for="newEquipRoom">📍 위치</label>
+                                <input type="text" id="newEquipRoom" required placeholder="예: 금속공예실" minlength="2" maxlength="50">
+                            </div>
+                            <div class="form-group">
+                                <label for="newEquipStatus">📊 상태</label>
+                                <select id="newEquipStatus" required>
+                                    <option value="">-- 상태를 선택해주세요 --</option>
+                                    <option value="normal">✅ 정상</option>
+                                    <option value="caution">⚠️ 점검 필요</option>
+                                    <option value="warning">🚨 사용 중지</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="newEquipDate">📅 마지막 점검일</label>
+                                <input type="date" id="newEquipDate" required>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn-primary" style="flex: 1;">➕ 추가</button>
+                                <button type="button" class="btn-secondary" style="flex: 1;" onclick="toggleAddEquipmentForm()">취소</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 장비 상세 정보 -->
+                <div id="equipmentDetail" class="equipment-detail-modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 id="detailTitle"></h3>
+                            <button class="close-btn" onclick="closeEquipmentDetail()">✕</button>
+                        </div>
+                        <div id="equipmentDetailContent" class="detail-content"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 일정 탭 -->
+            <section id="schedule-tab" class="tab-content">
+                <div class="section-header">
+                    <h2>일정관리</h2>
+                </div>
+                
+                <div class="schedule-container">
+                    <!-- 일정 추가 폼 -->
+                    <div class="admin-only" style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+                        <h3>📝 새로운 일정 추가</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 1rem; align-items: flex-end;">
+                            <div>
+                                <label style="display: block; font-weight: 500; margin-bottom: 0.5rem;">시작 날짜</label>
+                                <input type="date" id="newScheduleDateStart" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-weight: 500; margin-bottom: 0.5rem;">종료 날짜</label>
+                                <input type="date" id="newScheduleDateEnd" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-weight: 500; margin-bottom: 0.5rem;">제목</label>
+                                <input type="text" id="newScheduleTitle" placeholder="일정 제목" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-weight: 500; margin-bottom: 0.5rem;">타입</label>
+                                <select id="newScheduleType" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                                    <option value="education">교육</option>
+                                    <option value="practice">실습</option>
+                                    <option value="maintenance">유지보수</option>
+                                    <option value="other">기타</option>
+                                </select>
+                            </div>
+                            <button onclick="addSchedule()" class="btn-primary" style="margin: 0;">추가</button>
+                        </div>
+                    </div>
+
+                    <!-- 달력 -->
+                    <div class="calendar-header">
+                        <button id="prevMonth" class="calendar-nav">&lt;</button>
+                        <h3 id="currentMonth" style="flex: 1; text-align: center; margin: 0;"></h3>
+                        <button id="nextMonth" class="calendar-nav">&gt;</button>
+                    </div>
+                    <div class="calendar-wrapper">
+                        <div class="calendar-weekdays">
+                            <div class="weekday">일</div>
+                            <div class="weekday">월</div>
+                            <div class="weekday">화</div>
+                            <div class="weekday">수</div>
+                            <div class="weekday">목</div>
+                            <div class="weekday">금</div>
+                            <div class="weekday">토</div>
+                        </div>
+                        <div id="calendarDays" class="calendar-days"></div>
+                    </div>
+                    <div id="scheduleDetail" class="schedule-detail"></div>
+                </div>
+            </section>
+
+            <!-- 커뮤니티 탭 -->
+            <section id="community-tab" class="tab-content">
+                <div class="section-header">
+                    <h2>커뮤니티</h2>
+                </div>
+                
+                <div class="community-container">
+                    <div class="post-write-section">
+                        <button class="btn-primary" id="openPostForm">글 작성하기</button>
+                    </div>
+
+                    <div id="postForm" style="display: none;" class="post-form">
+                        <h3>게시글 작성</h3>
+                        <form id="communityForm">
+                            <div class="form-group">
+                                <label for="postTitle">제목:</label>
+                                <input type="text" id="postTitle" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="postCategory">카테고리:</label>
+                                <select id="postCategory" required>
+                                    <option value="">선택하세요</option>
+                                    <option value="tip">꿀팁</option>
+                                    <option value="experience">실습 경험</option>
+                                    <option value="question">질문</option>
+                                    <option value="review">후기</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="postContent">내용:</label>
+                                <textarea id="postContent" rows="6" required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="postImage">사진 첨부 (선택):</label>
+                                <input type="file" id="postImage" accept="image/*">
+                            </div>
+
+                            <div class="button-group">
+                                <button type="submit" class="btn-primary">등록</button>
+                                <button type="button" class="btn-secondary" id="cancelPost">취소</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="posts-list">
+                        <h3>커뮤니티 게시판</h3>
+                        <div id="communityPosts"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 관리자 탭 -->
+            <section id="admin-tab" class="tab-content admin-only" style="display: none;">
+                <div class="section-header">
+                    <h2>👨‍💼 관리자 대시보드</h2>
+                </div>
+                
+                <div class="admin-container">
+                    <div class="admin-grid">
+                        <!-- 퀴즈 관리 -->
+                        <div class="admin-card">
+                            <div class="admin-card-header">
+                                <h3>📝 퀴즈 관리</h3>
+                            </div>
+                            <div class="admin-card-body">
+                                <p>안전 퀴즈 문제를 추가, 수정, 삭제합니다.</p>
+                                <button class="btn-primary" onclick="switchTab('education')" style="margin-top: 1rem;">퀴즈 관리하기</button>
+                            </div>
+                        </div>
+
+                        <!-- 실습정보 관리 -->
+                        <div class="admin-card">
+                            <div class="admin-card-header">
+                                <h3>📚 실습정보 관리</h3>
+                            </div>
+                            <div class="admin-card-body">
+                                <p>실습 방법, 준비물, 안전수칙 정보를 관리합니다.</p>
+                                <button class="btn-primary" onclick="switchTab('education')" style="margin-top: 1rem;">실습정보 관리하기</button>
+                            </div>
+                        </div>
+
+                        <!-- 위험요소 관리 -->
+                        <div class="admin-card">
+                            <div class="admin-card-header">
+                                <h3>⚠️ 위험요소 관리</h3>
+                            </div>
+                            <div class="admin-card-body">
+                                <p>학생이 제보한 위험요소를 확인하고 처리합니다.</p>
+                                <button class="btn-primary" onclick="switchTab('hazard')" style="margin-top: 1rem;">위험요소 관리하기</button>
+                            </div>
+                        </div>
+
+                        <!-- 장비 관리 -->
+                        <div class="admin-card">
+                            <div class="admin-card-header">
+                                <h3>🔧 장비 관리</h3>
+                            </div>
+                            <div class="admin-card-body">
+                                <p>실습 장비를 등록하고 유지보수 이력을 관리합니다.</p>
+                                <button class="btn-primary" onclick="switchTab('equipment')" style="margin-top: 1rem;">장비 관리하기</button>
+                            </div>
+                        </div>
+
+                        <!-- 일정 관리 -->
+                        <div class="admin-card">
+                            <div class="admin-card-header">
+                                <h3>📅 일정 관리</h3>
+                            </div>
+                            <div class="admin-card-body">
+                                <p>방과후 실습 일정과 참가 정보를 관리합니다.</p>
+                                <button class="btn-primary" onclick="switchTab('schedule')" style="margin-top: 1rem;">일정 관리하기</button>
+                            </div>
+                        </div>
+
+                        <!-- 게시판 관리 -->
+                        <div class="admin-card">
+                            <div class="admin-card-header">
+                                <h3>💬 게시판 관리</h3>
+                            </div>
+                            <div class="admin-card-body">
+                                <p>부적절한 게시글이나 댓글을 관리합니다.</p>
+                                <button class="btn-primary" onclick="switchTab('community')" style="margin-top: 1rem;">게시판 관리하기</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 통계 섹션 -->
+                    <div class="admin-stats">
+                        <h3>📊 시스템 통계</h3>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-number">0</div>
+                                <div class="stat-label">등록된 학생</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">0</div>
+                                <div class="stat-label">제보된 위험요소</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">0</div>
+                                <div class="stat-label">등록된 장비</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">0</div>
+                                <div class="stat-label">작성된 게시글</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- 푸터 -->
+        <footer class="footer">
+            <p>&copy; 2024 학교 실습실 안전 교육 시스템 | 모든 학생의 안전을 위해</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
